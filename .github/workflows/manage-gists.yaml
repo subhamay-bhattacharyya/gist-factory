@@ -42,7 +42,7 @@ jobs:
         shell: bash
         working-directory: ${{ github.workspace }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GIST_PAT }}  # ✅ Must have 'gist' scope
+          GITHUB_TOKEN: ${{ secrets.GH_GIST_TOKEN }}  # ✅ Must have 'gist' scope
         run: |
           echo "📥 Fetching Secret Gists..."
           python get-list-of-gists.py
@@ -53,7 +53,7 @@ jobs:
         shell: bash
         working-directory: ${{ github.workspace }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GIST_PAT }}  # ✅ Must have 'gist' scope
+          GITHUB_TOKEN: ${{ secrets.GH_GIST_TOKEN }}  # ✅ Must have 'gist' scope
         run: |
           python manage_gists.py
 
