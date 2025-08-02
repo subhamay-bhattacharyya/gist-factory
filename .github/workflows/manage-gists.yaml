@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Fetching Gists..."
-          python fetch-list-of-gists.py
+          python get-list-of-gists.py
 
       - name: Run Gist Manager Script
         id: manage-gists
