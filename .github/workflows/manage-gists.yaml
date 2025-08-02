@@ -28,15 +28,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      # - name: Install Required Python Packages
-      #   run: |
-      #     pip install --upgrade pip
-      #     pip install requests
+      - name: Install Required Python Packages
+        run: |
+          pip install --upgrade pip
+          pip install requests
 
       - name: Get the list of Gists
         id: get-gists
@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Fetching Gists..."
-          ls -laR
+          python fetch-list-of-gists.py
 
       - name: Run Gist Manager Script
         id: manage-gists
