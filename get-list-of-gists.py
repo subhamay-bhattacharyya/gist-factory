@@ -47,13 +47,26 @@ def fetch_secret_gists():
                         if content_response.status_code == 200:
                             content = content_response.text
                         else:
-                            content = f"[Failed to fetch content: {content_response.status_code}]"
+                            # content = f"[Failed to fetch content: {content_response.status_code}]"
+                            try:
+                                content = json.loads(content)  # Ensure content is JSON serializable
+                                content = {
+                                    "schemaVersion": content.get("schemaVersion", None),
+                                    "label": content.get("label",None),
+                                    "message": content.get("message",None),
+                                    "color": content.get("color",None),
+                                    "style": content.get("style",None)
+                                }
+                            except json.JSONDecodeError:
+                                content = f"[Content not JSON serializable]"
+                                content = {}
 
                     secret_gists.append({
                         "id": gist_id,
-                        "description": description,
                         "filename": filename,
-                        "content": content
+                        "description": description,
+                        "content": content,
+                        "operation": "fetched",
                     })
 
         page += 1
@@ -62,17 +75,31 @@ def fetch_secret_gists():
 
 if __name__ == "__main__":
     gists = fetch_secret_gists()
+    gist_ids = {}
     if gists:
         print(f"🔐 Found {len(gists)} secret gist file(s):")
-        for g in gists:
-            print(f"\n📄 Gist ID: {g['id']}")
-            print(f"📝 Description: {g['description']}")
-            print(f"📁 Filename: {g['filename']}")
-            print(f"📄 Content:\n{g['content']}\n{'-'*60}")
-        
-        # Optional: write to a file
-        with open("gists_fetched.json", "w") as f:
-            json.dump(gists, f, indent=2)
-        print("\n📂 Gists written to gists_fetched.json")
+        # Convert stringified JSON in 'content' to dicts where possible
+        for gist in gists:
+            content = gist.get("content")
+            if isinstance(content, str):
+                try:
+                    gist["content"] = json.loads(content)
+                except Exception:
+                    pass  # Leave as string if not valid JSON
+
+        for gist in gists:
+            gist_name = gist.get("filename", "").split(".")[0]
+            gist_ids[gist_name] = {
+                "id": gist.get("id"),
+                "raw_url": gist.get("raw_url", "")
+            }
+
+        with open("all-gists.json", "w") as f:
+            json.dump(gists, f, indent=2, ensure_ascii=False)
+        print("\n📂 Gists written to all-gists.json")
+
+        with open("gist-ids.json", "w") as f:
+            json.dump(gist_ids, f, indent=2, ensure_ascii=False)
+        print("📂 Gist IDs written to gist-ids.json")
     else:
         print("ℹ️ No secret gists found.")

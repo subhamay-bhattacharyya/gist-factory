@@ -55,13 +55,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_GIST_TOKEN }}  # ✅ Must have 'gist' scope
         run: |
-          python manage_gists.py
+          python manage-gists.py
 
       - name: Commit Updated JSON File
         if: ${{ github.event.inputs.operation == 'manage-gists' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add gists_input.json
-          git commit -m "🔄 Update gists_input.json with Gist IDs and changes" || echo "No changes to commit"
+          git add all-gists.json
+          git add gist-ids.json
+          git commit -m "🔄 Update gists-fetched.json with Gist IDs and changes" || echo "No changes to commit"
           git push
